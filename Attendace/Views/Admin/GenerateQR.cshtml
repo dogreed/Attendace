@@ -1,0 +1,33 @@
+﻿@model Attendace.ViewModel.CreateQRSessionViewModel
+@using Attendace.Models
+@{
+    ViewData["Title"] = "GenerateQR";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+<h1>GenerateQR</h1>
+
+
+<form asp-action="GenerateQR" method="post">
+    <div class="form-group">
+        <label asp-for="CourseId">Select Course</label>
+        <select asp-for="CourseId" class="form-control" asp-items="@(new SelectList(Model.AvailableCourses, "CourseId", "CourseName"))">
+            <option value="">-- Select Course --</option>
+        </select>
+        <span asp-validation-for="CourseId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DurationMinutes">Duration (minutes)</label>
+        <input asp-for="DurationMinutes" class="form-control" />
+        <span asp-validation-for="DurationMinutes" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Generate QR Code</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,12 @@
+﻿@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Mvc.Razor
+@using Microsoft.AspNetCore.Mvc
+
+@if (User.Identity.IsAuthenticated)
+{
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+    </form>
+}

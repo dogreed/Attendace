@@ -1,0 +1,21 @@
+﻿@using Attendace.Helper
+@{
+    ViewData["Title"] = "QRCode";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+
+<h2>Scan to Mark Attendance</h2>
+
+@if (ViewBag.QRUrl != null)
+{
+    <div style="text-align:center;">
+        <div>@Html.Raw(QRCodeHelper.GenerateQrSvg(ViewBag.QRUrl))</div>
+        <p><strong>Expires in:</strong> approx. @ViewBag.Duration minutes</p>
+    </div>
+}
+else
+{
+    <p>No QR code available.</p>
+}
+

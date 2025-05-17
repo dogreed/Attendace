@@ -1,0 +1,45 @@
+﻿@model IEnumerable<Attendace.Models.Routine>
+@{
+    ViewData["Title"] = "RoutineList";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+<h1>RoutineList</h1>
+
+
+
+<h2 class="mb-4">Routine List</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>Department</th>
+            <th>Semester</th>
+            <th>Course</th>
+            <th>Faculty</th>
+            <th>Day</th>
+            <th>Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        @Html.AntiForgeryToken()
+
+        @foreach (var routine in Model)
+        {
+            <tr>
+                <td>@routine.Course.CourseName</td>
+                <td>@routine.Course.Semester</td>
+                <td>@routine.Course.Department.DepartmentName</td>
+                <td>@routine.Faculty.User.Name</td>
+                <td>@routine.DayOfWeek</td>
+                <td>@routine.StartTime.ToString(@"hh\:mm") - @routine.EndTime.ToString(@"hh\:mm")</td>
+                <td>
+                    <a asp-action="EditRoutine" asp-route-id="@routine.RoutineId" class="btn btn-sm btn-warning">Edit</a>
+                    <form asp-action="DeleteRoutine" asp-route-id="@routine.RoutineId" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this routine?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

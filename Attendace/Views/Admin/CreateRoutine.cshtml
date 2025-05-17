@@ -1,0 +1,101 @@
+﻿@model Attendace.ViewModel.RoutineFormViewModel
+@{
+    ViewData["Title"] = "CreateRoutine";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+<h1>CreateRoutine</h1>
+
+
+<form asp-action="@(Model.RoutineId.HasValue ? "EditRoutine" : "CreateRoutine")" method="post" novalidate>
+    @if (Model.RoutineId.HasValue)
+    {
+        <input type="hidden" asp-for="RoutineId" />
+    }
+
+
+    <div class="form-group">
+        <label asp-for="DepartmentId">Department</label>
+        <select asp-for="DepartmentId" class="form-control" asp-items="@(new SelectList(Model.Departments, "DepartmentId", "DepartmentName", Model.DepartmentId))">
+            <option value="">-- Select Department --</option>
+        </select>
+        <span asp-validation-for="DepartmentId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CourseId">Course</label>
+        <select asp-for="CourseId" class="form-control" id="CourseId"
+                asp-items="@(new SelectList(Model.Courses ?? new List<Attendace.Models.Course>(), "CourseId", "CourseName", Model.CourseId))">
+            <option value="">-- Select Course --</option>
+        </select>
+
+        <span asp-validation-for="CourseId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="FacultyId">Faculty</label>
+        <select asp-for="FacultyId" class="form-control"
+                asp-items="@(new SelectList(Model.Faculties ?? new List<Attendace.Models.Faculty>(), "FacultyId", "User.Name", Model.FacultyId))">
+            <option value="">-- Select Faculty --</option>
+        </select>
+
+        <span asp-validation-for="FacultyId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DayOfWeek">Day of Week</label>
+        <select asp-for="DayOfWeek" class="form-control" asp-items="ViewBag.Days">
+            <option value="">-- Select Day --</option>
+        </select>
+
+        <span asp-validation-for="DayOfWeek" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="StartTime">Start Time</label>
+        <input asp-for="StartTime" type="time" class="form-control" />
+        <span asp-validation-for="StartTime" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="EndTime">End Time</label>
+        <input asp-for="EndTime" type="time" class="form-control" />
+        <span asp-validation-for="EndTime" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Save Routine</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#DepartmentId").change(function () {
+                var departmentId = $(this).val();
+                if (departmentId) {
+                    $.ajax({
+                        url: '@Url.Action("GetCoursesByDepartment")',
+                        type: 'GET',
+                        data: { departmentId: departmentId },
+                        success: function (data) {
+                            var courseDropdown = $("#CourseId");
+                            courseDropdown.empty();
+                            courseDropdown.append('<option value="">-- Select Course --</option>');
+                            $.each(data, function (i, course) {
+                                courseDropdown.append('<option value="' + course.courseId + '">' + course.courseName + '</option>');
+                            });
+                        },
+                        error: function () {
+                            alert("Error loading courses.");
+                        }
+                    });
+                } else {
+                    $("#CourseId").empty();
+                    $("#CourseId").append('<option value="">-- Select Course --</option>');
+                }
+            });
+        });
+    </script>
+}
