@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Attendace.Models.Course>
+@{
+    ViewData["Title"] = "List";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+
+<h2>Courses</h2>
+
+<a asp-action="Add" class="btn btn-success mb-2">Add New Course</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Semester</th>
+            <th>Year</th>
+            <th>Department</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var course in Model)
+        {
+            <tr>
+                <td>@course.CourseName</td>
+                <td>@course.Semester</td>
+                <td>@course.AcademicYear</td>
+                <td>@course.Department?.DepartmentName</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@course.CourseId" class="btn btn-sm btn-primary">Edit</a>
+                    <a asp-action="ConfirmDelete" asp-route-id="@course.CourseId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

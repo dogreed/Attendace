@@ -1,0 +1,39 @@
+﻿@model List<Attendace.Models.Faculty>
+@{
+    ViewData["Title"] = "FacultyList";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Courses</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var faculty in Model)
+        {
+            <tr>
+                <td>@faculty.User.Name</td>
+                <td>@faculty.Department.DepartmentName</td>
+                <td>
+                    @if (faculty.FacultyCourses != null && faculty.FacultyCourses.Any())
+                    {
+                        <ul>
+                            @foreach (var fc in faculty.FacultyCourses)
+                            {
+                                <li>@fc.Course.CourseName (@fc.Course.Semester)</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <span class="text-muted">No courses assigned</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

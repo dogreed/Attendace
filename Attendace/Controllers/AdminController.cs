@@ -277,5 +277,161 @@ namespace Attendace.Controllers
 			return RedirectToAction("RoutineList");
 		}
 
+		//faculty List
+
+		public async Task<IActionResult> FacultyList()
+		{
+			var faculties = await _context.Faculties
+				.Include(f => f.User)
+				.Include(f => f.Department)
+				.Include(f => f.FacultyCourses)
+					.ThenInclude(fc => fc.Course)
+				.ToListAsync();
+
+			return View(faculties);
+		}
+
+		// GET: Assign Courses to Faculty
+		public async Task<IActionResult> AssignCourse()
+		{
+			var model = new CourseAssignmentViewModel
+			{
+				Faculties = await _context.Faculties.Include(f => f.User).ToListAsync(),
+				Departments = await _context.Departments.ToListAsync(),
+				Courses = new List<Course>()
+			};
+
+			return View(model);
+		}
+
+		// POST: Assign Courses to Faculty
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> AssignCourse(CourseAssignmentViewModel model)
+		{
+			model.Faculties = await _context.Faculties.Include(f => f.User).ToListAsync();
+			model.Departments = await _context.Departments.ToListAsync();
+
+			if (model.DepartmentId > 0)
+			{
+				model.Courses = await _context.Courses
+					.Where(c => c.DepartmentId == model.DepartmentId)
+					.ToListAsync();
+			}
+
+			if (model.FacultyId == 0 || model.SelectedCourseIds.Count == 0)
+			{
+				ModelState.AddModelError("", "Please select a faculty and at least one course.");
+				return View(model);
+			}
+
+			// Save assignments
+			foreach (var courseId in model.SelectedCourseIds)
+			{
+				if (!_context.FacultyCourses.Any(fc => fc.FacultyId == model.FacultyId && fc.CourseId == courseId))
+				{
+					_context.FacultyCourses.Add(new FacultyCourse
+					{
+						FacultyId = model.FacultyId,
+						CourseId = courseId
+					});
+				}
+			}
+
+			await _context.SaveChangesAsync();
+			return RedirectToAction(nameof(AssignCourse));
+		}
+
+		public async Task<IActionResult> FacultyAssignments()
+		{
+			var assignments = await _context.FacultyCourses
+				.Include(fc => fc.Faculty)
+					.ThenInclude(f => f.User)
+				.Include(fc => fc.Course)
+					.ThenInclude(c => c.Department)
+				.ToListAsync();
+
+			return View(assignments);
+		}
+
+		public async Task<IActionResult> EditAssignment(int id)
+		{
+			var facultyCourse = await _context.FacultyCourses
+				.Include(fc => fc.Faculty)
+					.ThenInclude(f => f.User)
+				.Include(fc => fc.Course)
+				.FirstOrDefaultAsync(fc => fc.FacultyCourseId == id);
+
+			if (facultyCourse == null)
+				return NotFound();
+
+			var faculty = await _context.Faculties
+				.Include(f => f.User)
+				.FirstOrDefaultAsync(f => f.FacultyId == facultyCourse.FacultyId);
+
+			var departmentId = faculty?.DepartmentId ?? 0;
+
+			var model = new CourseAssignmentViewModel
+			{
+				FacultyId = facultyCourse.FacultyId,
+				DepartmentId = departmentId,
+				SelectedCourseIds = new List<int> { facultyCourse.CourseId },
+
+				Faculties = await _context.Faculties.Include(f => f.User).ToListAsync(),
+				Departments = await _context.Departments.ToListAsync(),
+				Courses = await _context.Courses
+					.Where(c => c.DepartmentId == departmentId)
+					.ToListAsync()
+			};
+
+			ViewBag.AssignmentId = id;
+
+			return View(model);
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> EditAssignment(int id, CourseAssignmentViewModel model)
+		{
+			model.Faculties = await _context.Faculties.Include(f => f.User).ToListAsync();
+			model.Departments = await _context.Departments.ToListAsync();
+			model.Courses = await _context.Courses
+				.Where(c => c.DepartmentId == model.DepartmentId)
+				.ToListAsync();
+
+			if (model.FacultyId == 0 || model.SelectedCourseIds.Count == 0)
+			{
+				ModelState.AddModelError("", "Please select a faculty and at least one course.");
+				return View(model);
+			}
+
+			var existingAssignment = await _context.FacultyCourses.FindAsync(id);
+			if (existingAssignment == null) return NotFound();
+
+			// Only supporting a single course assignment per faculty-course pair in this UI
+			existingAssignment.CourseId = model.SelectedCourseIds.First();
+			existingAssignment.FacultyId = model.FacultyId;
+
+			await _context.SaveChangesAsync();
+			return RedirectToAction(nameof(FacultyAssignments)); // or wherever your list is
+		}
+
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> RemoveAssignment(int facultyCourseId)
+		{
+			var assignment = await _context.FacultyCourses.FindAsync(facultyCourseId);
+			if (assignment == null) return NotFound();
+
+			_context.FacultyCourses.Remove(assignment);
+			await _context.SaveChangesAsync();
+
+			return RedirectToAction(nameof(FacultyAssignments));
+		}
+
+
+
+
 	}
 }

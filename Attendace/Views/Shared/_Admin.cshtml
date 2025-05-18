@@ -67,19 +67,40 @@
                                 <i class="bi bi-speedometer2 me-1"></i> Dashboard
                             </a>
                         </li>
+                       
                         <li class="nav-item">
                             <a class="nav-link active" asp-controller="Admin" asp-action="GenerateQR">
-                                <i class="bi bi-speedometer2 me-1"></i> GenerateQR
+                                <i class="bi bi-qr-code me-1"></i> GenerateQR
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active" asp-controller="Admin" asp-action="CreateRoutine">
-                                <i class="bi bi-speedometer2 me-1"></i> Add Routine 
+                                <i class="bi bi-calendar2-day me-1"></i> Add Routine
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" asp-controller="Department" asp-action="Index">
+                                <i class="bi bi-view-list me-1"></i>Department
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" asp-controller="Course" asp-action="List">
+                                <i class="bi bi-journal me-1"></i>Course
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active" asp-controller="Admin" asp-action="RoutineList">
-                                <i class="bi bi-speedometer2 me-1"></i> Routine Liat
+                                <i class="bi bi-card-list"></i> Routine List
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" asp-controller="Admin" asp-action="AssignCourse">
+                                <i class="bi bi-person-workspace"></i> Assign course
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" asp-controller="Admin" asp-action="FacultyList">
+                                <i class="bi bi-fullscreen"></i> Faculty
                             </a>
                         </li>
                     </ul>

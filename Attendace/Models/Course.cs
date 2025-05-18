@@ -20,6 +20,8 @@ namespace Attendace.Models
 		public string AcademicYear { get; set; } = null!;
 
 		[ForeignKey(nameof(Department))]
+		[Required(ErrorMessage = "Please select a department.")]
+		[Range(1, int.MaxValue, ErrorMessage = "Please select a department.")]
 		public int DepartmentId { get; set; }
 		public Department Department { get; set; } = null!;
 

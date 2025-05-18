@@ -1,0 +1,40 @@
+﻿@model List<Attendace.Models.FacultyCourse>
+
+@{
+    ViewData["Title"] = "Faculty Assignments";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+<h2>Faculty Course Assignment</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Faculty</th>
+            <th>Department</th>
+            <th>Course</th>
+            <th>Semester</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var assignment in Model)
+        {
+            <tr>
+                <td>@assignment.Faculty.User.Name</td>
+                <td>@assignment.Course.Department.DepartmentName</td>
+                <td>@assignment.Course.CourseName</td>
+                <td>@assignment.Course.Semester</td>
+                <td>
+                    <a asp-action="EditAssignment" asp-route-id="@assignment.FacultyCourseId" class="btn btn-sm btn-warning">Edit</a>
+                    <form asp-action="RemoveAssignment" asp-route-facultyCourseId="@assignment.FacultyCourseId" method="post">
+
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">Delete</button>
+                    </form>
+           
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
